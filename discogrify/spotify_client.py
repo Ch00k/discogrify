@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any, Generator, Optional
 
-from spotipy import Spotify, SpotifyException
+from spotipy import Spotify, SpotifyException, SpotifyOauthError
 from spotipy.cache_handler import CacheHandler
 from spotipy.oauth2 import SpotifyPKCE
 
@@ -77,7 +77,7 @@ class Client:
 
         try:
             res = self.client.me()
-        except SpotifyException as e:
+        except (SpotifyException, SpotifyOauthError) as e:
             raise ClientError(e)
 
         if res is None:
@@ -88,7 +88,7 @@ class Client:
     def search_artists(self, term: str) -> Generator[list[Artist], None, None]:
         try:
             res = self.client.search(q="artist:" + term, type="artist", limit=PAGE_SIZE)
-        except SpotifyException as e:
+        except (SpotifyException, SpotifyOauthError) as e:
             raise ClientError(e)
 
         if res is None:
@@ -109,7 +109,7 @@ class Client:
     def get_artist(self, artist_id: str) -> Artist:
         try:
             res = self.client.artist(artist_id)
-        except SpotifyException as e:
+        except (SpotifyException, SpotifyOauthError) as e:
             raise ClientError(e)
 
         if res is None:
@@ -144,7 +144,7 @@ class Client:
 
         try:
             res = self.client.artist_albums(artist.id, album_type=",".join(album_types), limit=PAGE_SIZE)
-        except SpotifyException as e:
+        except (SpotifyException, SpotifyOauthError) as e:
             raise ClientError(e)
 
         if res is None:
@@ -165,7 +165,7 @@ class Client:
     def get_album_tracks(self, album: Album) -> Generator[list[Track], None, None]:
         try:
             res = self.client.album_tracks(album.id, limit=PAGE_SIZE)
-        except SpotifyException as e:
+        except (SpotifyException, SpotifyOauthError) as e:
             raise ClientError(e)
 
         if res is None:
@@ -184,7 +184,7 @@ class Client:
     def get_my_playlists(self) -> Generator[list[Playlist], None, None]:
         try:
             res = self.client.current_user_playlists(limit=PAGE_SIZE)
-        except SpotifyException as e:
+        except (SpotifyException, SpotifyOauthError) as e:
             raise ClientError(e)
 
         if res is None:
@@ -207,7 +207,7 @@ class Client:
 
         try:
             res = self.client.user_playlist_create(self.me.id, name=name, public=public, description=description)
-        except SpotifyException as e:
+        except (SpotifyException, SpotifyOauthError) as e:
             raise ClientError(e)
 
         if res is None:
@@ -219,14 +219,14 @@ class Client:
         for i in range(0, len(tracks), PAGE_SIZE_PLAYLIST_TRACKS):
             try:
                 self.client.playlist_add_items(playlist.id, [t.id for t in tracks[i : i + PAGE_SIZE_PLAYLIST_TRACKS]])
-            except SpotifyException as e:
+            except (SpotifyException, SpotifyOauthError) as e:
                 # TODO: rollback?
                 raise ClientError(e)
 
     def get_playlist_tracks(self, playlist: Playlist) -> Generator[list[Track], None, None]:
         try:
             res = self.client.playlist_items(playlist.id, limit=PAGE_SIZE_PLAYLIST_TRACKS)
-        except SpotifyException as e:
+        except (SpotifyException, SpotifyOauthError) as e:
             raise ClientError(e)
 
         if res is None:
@@ -252,7 +252,7 @@ class Client:
         while result[key]["next"]:
             try:
                 next_page = self.client.next(result[key])
-            except SpotifyException as e:
+            except (SpotifyException, SpotifyOauthError) as e:
                 raise ClientError(e)
 
             if next_page is None:
@@ -268,7 +268,7 @@ class Client:
         while result["next"]:
             try:
                 next_page = self.client.next(result)
-            except SpotifyException as e:
+            except (SpotifyException, SpotifyOauthError) as e:
                 raise ClientError(e)
 
             if next_page is None:
@@ -282,7 +282,7 @@ class Client:
 def main() -> None:
     artist_search_term = input("Input artist search term: ")
 
-    client = Client(scope="playlist-modify-private playlist-modify-public")
+    client = Client(client_id="foobar", scope="playlist-modify-private playlist-modify-public")
 
     artist = None
     artist_tracks = []

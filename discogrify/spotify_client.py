@@ -60,12 +60,14 @@ class ClientError(Exception):
 class Client:
     def __init__(
         self,
+        client_id: str,
         scope: str,
         redirect_uri: Optional[str] = None,
         open_browser: bool = True,
         cache_handler: Optional[CacheHandler] = None,
     ) -> None:
         self.auth_manager = SpotifyPKCE(
+            client_id=client_id,
             scope=scope,
             redirect_uri=redirect_uri,
             open_browser=open_browser,

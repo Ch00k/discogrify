@@ -21,6 +21,7 @@ setup(
     license="Unlicense",
     url="https://github.com/Ch00k/discogrify",
     packages=find_packages(),
+    include_package_data=True,
     install_requires=read_lines(Path(__file__).parent / "requirements.txt"),
     entry_points={
         "console_scripts": [

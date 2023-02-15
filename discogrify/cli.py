@@ -17,11 +17,13 @@ class InvalidArtistURL(Exception):
     pass
 
 
-def create_client() -> spotify_client.Client:
+def create_client(open_browser: bool = True) -> spotify_client.Client:
+    auth_config = utils.AuthConfig.from_file(Path(__file__).parent / "auth_config")
     return spotify_client.Client(
+        client_id=auth_config.client_id,
         scope=config.SPOTIFY_AUTH_SCOPE,
-        redirect_uri=config.SPOTIFY_AUTH_REDIRECT_URL,
-        open_browser=True,
+        redirect_uri=auth_config.pick_redirect_url(),
+        open_browser=open_browser,
         cache_handler=CacheFileHandler(cache_path=config.D8Y_AUTH_CACHE_FILE),
     )
 
@@ -39,9 +41,20 @@ def cli() -> None:
 
 
 @cli.command()
-def authenticate() -> None:
-    create_client()
-    click.echo("Authentication successful")
+@click.option("-l", "--headless", is_flag=True, help="Run in headless mode (don't attempt to open a browser)")
+def login(headless: bool) -> None:
+    create_client(open_browser=not headless)
+    click.echo("Login successful")
+
+
+@cli.command()
+def logout() -> None:
+    try:
+        config.D8Y_AUTH_CACHE_FILE.unlink()
+    except FileNotFoundError:
+        click.echo("Not logged in")
+    else:
+        click.echo("Logout successful")
 
 
 @cli.command()

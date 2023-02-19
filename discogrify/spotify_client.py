@@ -201,9 +201,29 @@ class Client:
                 for p in page
             ]
 
+    def get_user_playlists(self, user: User) -> Generator[list[Playlist], None, None]:
+        try:
+            res = self.client.user_playlists(user=user.id, limit=PAGE_SIZE)
+        except (SpotifyException, SpotifyOauthError) as e:
+            raise ClientError(e)
+
+        if res is None:
+            raise ClientError("boom!")
+
+        for page in self._paginate_list_result(res):
+            yield [
+                Playlist(
+                    name=p["name"],
+                    description=p["description"],
+                    id=p["id"],
+                    url=p["external_urls"]["spotify"],
+                )
+                for p in page
+            ]
+
     def create_my_playlist(self, name: str, description: Optional[str] = None, public: bool = True) -> Playlist:
         if description is None:
-            description = f"{name} discography by d8y"
+            description = ""
 
         try:
             res = self.client.user_playlist_create(self.me.id, name=name, public=public, description=description)
@@ -214,6 +234,12 @@ class Client:
             raise ClientError("boom!")
 
         return Playlist(name=name, description=description, id=res["id"], url=res["external_urls"]["spotify"])
+
+    def delete_my_playlist(self, playlist: Playlist) -> None:
+        try:
+            self.client.current_user_unfollow_playlist(playlist.id)
+        except (SpotifyException, SpotifyOauthError) as e:
+            raise ClientError(e)
 
     def add_tracks_to_playlist(self, playlist: Playlist, tracks: list[Track]) -> None:
         for i in range(0, len(tracks), PAGE_SIZE_PLAYLIST_TRACKS):

@@ -14,7 +14,7 @@ def read_lines(file_path: Path) -> List[str]:
 setup(
     name="discogrify",
     version=__version__,
-    description="Create discographies at Spotify",
+    description="Create discographies on Spotify",
     long_description=open("README.md").read(),
     author="Andrii Yurchuk",
     author_email="ay@mntw.re",

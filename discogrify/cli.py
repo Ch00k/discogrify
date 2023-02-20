@@ -134,7 +134,7 @@ def create(
         click.echo(e, err=True)
         raise click.exceptions.Exit(1)
 
-    click.echo(f"Artist: {artist.name} ({', '.join(artist.genres)})")
+    click.echo(f"{artist.name}: {', '.join(artist.genres)}")
 
     if not playlist_title:
         playlist_title = f"{artist.name} (by d8y)"
@@ -175,13 +175,19 @@ def create(
 
                 playlist_tracks = list(itertools.chain.from_iterable(client.get_playlist_tracks(playlist)))
 
-                click.echo(f"Playlist '{playlist_title}' already exists and contains {len(playlist_tracks)} tracks")
+                click.echo(
+                    f"Playlist '{playlist_title}' already exists and contains "
+                    f"{len(playlist_tracks)} track{'' if len(tracks) == 1 else 's'}"
+                )
 
                 tracks = utils.deduplicate_tracks(playlist_tracks, tracks)
                 if tracks:
-                    click.echo(f"Updating playlist with {len(tracks)} new tracks")
                     if not yes:
-                        click.confirm("Continue?", default=True, abort=True)
+                        click.confirm(
+                            f"Update playlist with {len(tracks)} new track{'' if len(tracks) == 1 else 's'}?",
+                            default=True,
+                            abort=True,
+                        )
                 else:
                     click.echo("No new tracks to be added")
                     raise click.exceptions.Exit(0)
@@ -194,8 +200,7 @@ def create(
 
     click.echo()
 
-    click.echo(f"Adding {len(tracks)} tracks to playlist")
+    click.echo(f"Adding {len(tracks)} track{'' if len(tracks) == 1 else 's'} to playlist")
     client.add_tracks_to_playlist(playlist=playlist, tracks=tracks)
 
-    click.echo()
     click.echo(f"Playlist ready: {playlist.url}")

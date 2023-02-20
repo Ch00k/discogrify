@@ -37,6 +37,7 @@ class Album(SpotifyEntity):
     name: str
     type: str
     release_year: str
+    num_tracks: int
 
 
 @dataclass
@@ -153,11 +154,12 @@ class Client:
         for page in self._paginate_list_result(res):
             yield [
                 Album(
+                    id=a["id"],
+                    url=a["external_urls"]["spotify"],
                     name=a["name"],
                     type=a["album_type"],
                     release_year=a["release_date"].split("-")[0],
-                    id=a["id"],
-                    url=a["external_urls"]["spotify"],
+                    num_tracks=a["total_tracks"],
                 )
                 for a in page
             ]

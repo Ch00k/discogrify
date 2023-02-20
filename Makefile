@@ -10,7 +10,7 @@ pip_compile: install_pip_tools
 pip_sync: install_pip_tools
 	pip-sync requirements.txt requirements-test.txt
 
-install_develop: pip_sync
+install_develop: pip_compile pip_sync
 	python setup.py develop
 
 test:

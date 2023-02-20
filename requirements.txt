@@ -22,6 +22,8 @@ six==1.16.0
     # via spotipy
 spotipy==2.22.0
     # via -r requirements.in
+tabulate==0.9.0
+    # via -r requirements.in
 urllib3==1.26.13
     # via
     #   requests

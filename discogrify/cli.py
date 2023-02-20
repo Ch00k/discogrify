@@ -4,6 +4,7 @@ from pathlib import Path
 
 import click
 from spotipy.cache_handler import CacheFileHandler
+from tabulate import tabulate
 
 from . import config, spotify_client, utils
 from .spotify_client import ClientError
@@ -44,8 +45,14 @@ def cli() -> None:
 @cli.command()
 @click.option("-l", "--headless", is_flag=True, help="Run in headless mode (don't attempt to open a browser)")
 def login(headless: bool) -> None:
-    create_client(open_browser=not headless)
-    click.echo("Login successful")
+    try:
+        create_client(open_browser=not headless)
+    except ClientError as e:
+        click.echo("Login failed")
+        click.echo(e, err=True)
+        raise click.exceptions.Exit(1)
+    else:
+        click.echo("Login successful")
 
 
 @cli.command()
@@ -99,7 +106,7 @@ def create(
     artist_url: str,
     playlist_title: str,
     playlist_description: str,
-    playlist_is_public: bool,
+    public: bool,
     with_singles: bool,
     with_compilations: bool,
     yes: bool,
@@ -114,7 +121,12 @@ def create(
     By default the discography playslist includes all albums and singles, but no compilations. This behaviour can be
     altered by --with-singles/--without-singles and --with-compilations/--without-compilations options.
     """
-    client = create_client()
+    try:
+        client = create_client()
+    except ClientError as e:
+        click.echo("Something went wrong")
+        click.echo(e, err=True)
+        raise click.exceptions.Exit(1)
 
     try:
         artist = client.get_artist(artist_url)
@@ -140,29 +152,18 @@ def create(
     click.echo()
 
     albums.sort(key=lambda x: (ALBUM_SORT_ORDER[x.type], x.release_year))
-
-    legend = "A - Album"
-    if with_singles:
-        legend += ", S - Single"
-    if with_compilations:
-        legend += ", C - Compilation"
-
-    click.echo(f"Albums ({legend}, total: {len(albums)}):")
-    click.echo(legend)
+    albums_table = [[a.type.capitalize(), a.release_year, a.num_tracks, a.name] for a in albums]
 
     tracks = []
     for album in albums:
-        click.echo(f"{album.type[0].upper()} {album.release_year} {album.name}")
         tracks.extend(list(itertools.chain.from_iterable(client.get_album_tracks(album))))
 
-    click.echo()
-
-    if tracks:
-        click.echo(f"Total tracks: {len(tracks)}")
-    else:
+    if not tracks:
         click.echo("No tracks found")
         raise click.exceptions.Exit(0)
 
+    albums_table += [["", "", len(tracks), ""]]
+    click.echo(tabulate(albums_table, headers=["Type", "Year", "Tracks", "Title"]))
     click.echo()
 
     playlist = None
@@ -189,9 +190,7 @@ def create(
         click.echo(f"Creating playlist '{playlist_title}'")
         if not yes:
             click.confirm("Continue?", default=True, abort=True)
-        playlist = client.create_my_playlist(
-            name=playlist_title, description=playlist_description, public=playlist_is_public
-        )
+        playlist = client.create_my_playlist(name=playlist_title, description=playlist_description, public=public)
 
     click.echo()
 

@@ -1,0 +1,24 @@
+Joy Division: Alternative Rock, Art Rock, Madchester, New Wave, Post-punk, Rock, Uk Post-punk
+
+Type         Year      Tracks  Title
+-----------  ------  --------  ------------------------------------------------------
+Album        1979          10  Unknown Pleasures
+Album        1979          22  Unknown Pleasures (Collector's Edition)
+Album        1980           9  Closer
+Album        1980          21  Closer (Collector's Edition)
+Single       1979           2  Transmission
+Single       1980           3  Love Will Tear Us Apart
+Single       1980           2  Atmosphere
+Single       1980           3  Love Will Tear Us Apart
+Single       2009           3  Love Will Tear Us Apart (1980 Martin Hannett Versions)
+Compilation  1981          20  Still (2007 Remaster)
+Compilation  1981          34  Still (Collector's Edition)
+Compilation  2008          14  The Best Of
+Compilation  2010          19  Substance
+Compilation  2011          18  TOTAL
+                          180
+
+Playlist 'Joy Division (by d8y)' already exists and contains 75 tracks
+
+Adding 105 tracks to playlist
+Playlist ready: https://open.spotify.com/playlist/{playlist_id}

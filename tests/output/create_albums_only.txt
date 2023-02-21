@@ -1,0 +1,14 @@
+Joy Division: Alternative Rock, Art Rock, Madchester, New Wave, Post-punk, Rock, Uk Post-punk
+
+Type    Year      Tracks  Title
+------  ------  --------  ---------------------------------------
+Album   1979          10  Unknown Pleasures
+Album   1979          22  Unknown Pleasures (Collector's Edition)
+Album   1980           9  Closer
+Album   1980          21  Closer (Collector's Edition)
+                      62
+
+Creating playlist 'Joy Division (by d8y)'
+
+Adding 62 tracks to playlist
+Playlist ready: https://open.spotify.com/playlist/{playlist_id}

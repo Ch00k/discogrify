@@ -19,3 +19,12 @@ show_column_numbers = true
 strict_optional = true
 warn_redundant_casts = true
 disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+addopts = "--cov --cov-report xml"
+
+[tool.coverage.run]
+branch = true
+omit = [
+    "**/*/test*/*"
+]

@@ -15,15 +15,12 @@ ALBUM_SORT_ORDER = {"album": 0, "single": 1, "compilation": 2}
 CONTEXT_SETTINGS = {"max_content_width": 120}
 
 
-class InvalidArtistURL(Exception):
-    pass
-
-
 def create_client(open_browser: bool = True) -> spotify_client.Client:
     auth_config = utils.AuthConfig.from_file(Path(__file__).parent / "auth_config")
+
     return spotify_client.Client(
         client_id=auth_config.client_id,
-        scope=" ".join(config.SPOTIFY_AUTH_SCOPE),
+        scope=" ".join(config.D8Y_SPOTIFY_AUTH_SCOPE),
         redirect_uri=auth_config.pick_redirect_url(),
         open_browser=open_browser,
         cache_handler=CacheFileHandler(cache_path=config.D8Y_AUTH_CACHE_FILE),
@@ -39,12 +36,13 @@ def extract_artist_id_from_url(_: click.Context, __: click.Parameter, value: str
 
 @click.group(context_settings=CONTEXT_SETTINGS)
 def cli() -> None:
-    Path.mkdir(config.D8Y_AUTH_CACHE_DIR, parents=True, exist_ok=True)
+    Path.mkdir(config.D8Y_AUTH_CACHE_FILE.parent, parents=True, exist_ok=True)
 
 
 @cli.command()
 @click.option("-l", "--headless", is_flag=True, help="Run in headless mode (don't attempt to open a browser)")
 def login(headless: bool) -> None:
+    """Authenticate the app with Spotify"""
     try:
         create_client(open_browser=not headless)
     except ClientError as e:
@@ -57,10 +55,12 @@ def login(headless: bool) -> None:
 
 @cli.command()
 def logout() -> None:
+    """Remove app's authentication credentials"""
     try:
         config.D8Y_AUTH_CACHE_FILE.unlink()
     except FileNotFoundError:
         click.echo("Not logged in")
+        raise click.exceptions.Exit(1)
     else:
         click.echo("Logout successful")
 
@@ -70,7 +70,7 @@ def logout() -> None:
 @click.option(
     "-t",
     "--playlist-title",
-    help="Default playlist title id 'ARTIST_NAME (by d8y)'. Use this option to provide a different title",
+    help="Default playlist title is 'ARTIST_NAME (by d8y)'. Use this option to provide a different title",
 )
 @click.option(
     "-d",
@@ -111,7 +111,7 @@ def create(
     with_compilations: bool,
     yes: bool,
 ) -> None:
-    """Create a discography playlist of an artist defined by the ARTIST_URL.
+    """Create a discography playlist of an artist defined by the ARTIST_URL
 
     The ARTIST_URL must be a https://open.spotify.com/artist/<ID> URL, where <ID> is the Spotify artist ID.
     Example: https://open.spotify.com/artist/6uothxMWeLWIhsGeF7cyo4

@@ -1,0 +1,6 @@
+Usage: cli logout [OPTIONS]
+
+  Remove app's authentication credentials
+
+Options:
+  --help  Show this message and exit.

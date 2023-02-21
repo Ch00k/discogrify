@@ -1,0 +1,7 @@
+Usage: cli login [OPTIONS]
+
+  Authenticate the app with Spotify
+
+Options:
+  -l, --headless  Run in headless mode (don't attempt to open a browser)
+  --help          Show this message and exit.

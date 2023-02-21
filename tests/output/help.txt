@@ -1,0 +1,9 @@
+Usage: cli [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  create  Create a discography playlist of an artist defined by the ARTIST_URL
+  login   Authenticate the app with Spotify
+  logout  Remove app's authentication credentials

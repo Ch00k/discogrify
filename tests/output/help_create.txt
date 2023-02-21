@@ -1,0 +1,26 @@
+Usage: cli create [OPTIONS] ARTIST_URL
+
+  Create a discography playlist of an artist defined by the ARTIST_URL
+
+  The ARTIST_URL must be a https://open.spotify.com/artist/<ID> URL, where <ID> is the Spotify artist ID. Example:
+  https://open.spotify.com/artist/6uothxMWeLWIhsGeF7cyo4
+
+  The ARTIST_URL can be found in browser URL bar while on the artist's page on Spotify.
+
+  By default the discography playslist includes all albums and singles, but no compilations. This behaviour can be
+  altered by --with-singles/--without-singles and --with-compilations/--without-compilations options.
+
+Options:
+  -t, --playlist-title TEXT       Default playlist title is 'ARTIST_NAME (by d8y)'. Use this option to provide a
+                                  different title
+  -d, --playlist-description TEXT
+                                  Playlist is created without a description by default. Use this option to specify a
+                                  description
+  -p, --public                    Playlist is created private be default. Provide this flag if you prefer it to be
+                                  public
+  --with-singles / --without-singles
+                                  Include or exclude singles from the resulting discography. Default: include
+  --with-compilations / --without-compilations
+                                  Include or exclude compilations from the resulting discography. Default: exclude
+  -y, --yes                       Answer 'yes' to all prompts (run non-interactively). Default: false
+  --help                          Show this message and exit.

@@ -81,3 +81,16 @@ def test_create(setup_auth: Callable, delete_playlist: Callable) -> None:
 
     # Pass playlist ID to delete_playlist fixture
     conftest.playlist_id = created_playlist_id
+
+
+def test_create_invalid_artist_url(setup_auth: Callable) -> None:
+    runner = CliRunner()
+
+    result = runner.invoke(
+        cli, ["create", "http://foobar.com/baz/qux"], terminal_width=CONTEXT_SETTINGS["max_content_width"]
+    )
+    assert result.exit_code == 2
+    assert result.output == (
+        "Usage: cli create [OPTIONS] ARTIST_URL\nTry 'cli create --help' for help.\n\n"
+        "Error: Invalid value for 'ARTIST_URL': Must be a https://open.spotify.com/artist/<ID> URL\n"
+    )

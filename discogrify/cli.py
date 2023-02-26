@@ -31,7 +31,7 @@ def extract_artist_id_from_url(_: click.Context, __: click.Parameter, value: str
     try:
         return utils.extract_artist_id_from_url(value)
     except RuntimeError:
-        raise click.BadParameter("Invalid Spotify artist URL")
+        raise click.BadParameter("Must be a https://open.spotify.com/artist/<ID> URL")
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)

@@ -18,5 +18,6 @@ jobs:
       - run: make install_develop
       - run: make test
         env:
+          D8Y_AUTH_CONFIG_FILE: ${{ github.workspace }}/tests/data/auth_config
           D8Y_AUTH_CACHE_DATA: ${{ secrets.D8Y_AUTH_CACHE_DATA }}
       - uses: codecov/codecov-action@v3

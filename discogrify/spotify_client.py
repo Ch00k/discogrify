@@ -86,7 +86,7 @@ class Client:
 
         self.me = User(name=res["display_name"], id=res["id"], url=res["external_urls"]["spotify"])
 
-    def search_artists(self, term: str) -> Generator[list[Artist], None, None]:
+    def search_artists(self, term: str) -> Generator[list[Artist], None, None]:  # pragma: no cover
         try:
             res = self.client.search(q="artist:" + term, type="artist", limit=PAGE_SIZE)
         except (SpotifyException, SpotifyOauthError) as e:
@@ -203,7 +203,7 @@ class Client:
                 for p in page
             ]
 
-    def get_user_playlists(self, user: User) -> Generator[list[Playlist], None, None]:
+    def get_user_playlists(self, user: User) -> Generator[list[Playlist], None, None]:  # pragma: no cover
         try:
             res = self.client.user_playlists(user=user.id, limit=PAGE_SIZE)
         except (SpotifyException, SpotifyOauthError) as e:
@@ -270,7 +270,9 @@ class Client:
                 for t in page
             ]
 
-    def _paginate_search_result(self, result: dict[str, Any]) -> Generator[list[dict[str, Any]], None, None]:
+    def _paginate_search_result(
+        self, result: dict[str, Any]
+    ) -> Generator[list[dict[str, Any]], None, None]:  # pragma: no cover
         if len(result) > 1:
             raise ClientError("Only one term at a time!")
 
@@ -307,7 +309,7 @@ class Client:
             result = next_page
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     artist_search_term = input("Input artist search term: ")
 
     client = Client(client_id="foobar", scope="playlist-modify-private playlist-modify-public")

@@ -8,7 +8,7 @@ from discogrify.cli import CONTEXT_SETTINGS, cli
 
 from . import conftest
 
-OUTPUT_PATH = Path(__file__).parent / "output"
+OUTPUT_PATH = Path(__file__).parent / "data/output"
 ARTIST_URL = "https://open.spotify.com/artist/432R46LaYsJZV2Gmc4jUV5"
 
 

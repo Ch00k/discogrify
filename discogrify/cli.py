@@ -16,11 +16,11 @@ CONTEXT_SETTINGS = {"max_content_width": 120}
 
 
 def create_client(open_browser: bool = True) -> spotify_client.Client:
-    auth_config = utils.AuthConfig.from_file(Path(__file__).parent / "auth_config")
+    auth_config = utils.AuthConfig.from_file(config.D8Y_AUTH_CONFIG_FILE)
 
     return spotify_client.Client(
         client_id=auth_config.client_id,
-        scope=" ".join(config.D8Y_SPOTIFY_AUTH_SCOPE),
+        scope=" ".join(config.D8Y_AUTH_SCOPE),
         redirect_uri=auth_config.pick_redirect_url(),
         open_browser=open_browser,
         cache_handler=CacheFileHandler(cache_path=config.D8Y_AUTH_CACHE_FILE),

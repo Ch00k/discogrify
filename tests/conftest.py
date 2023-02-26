@@ -1,27 +1,26 @@
-import os
-from pathlib import Path
 from typing import Generator, Optional
 
 import pytest
 
 from discogrify import cli, config, spotify_client
 
+from . import config as test_config
+
 playlist_id: Optional[str] = None
 
 
 @pytest.fixture()
-def setup_auth(tmp_path: Path) -> Generator:
-    orig_path = config.D8Y_AUTH_CACHE_FILE
-    temp_auth_cache_file = tmp_path / "auth"
-    temp_auth_cache_file.write_text(os.environ["D8Y_TEST_AUTH"])
-    config.D8Y_AUTH_CACHE_FILE = temp_auth_cache_file
-    yield
-    config.D8Y_AUTH_CACHE_FILE = orig_path
+def setup_auth() -> None:
+    if config.D8Y_AUTH_CACHE_FILE.exists() and config.D8Y_AUTH_CACHE_FILE.stat().st_size > 0:
+        return
+
+    config.D8Y_AUTH_CACHE_FILE.write_text(test_config.D8Y_AUTH_CACHE_DATA)
 
 
 @pytest.fixture()
 def delete_playlist() -> Generator:
     yield
+
     client = cli.create_client()
 
     if playlist_id is not None:

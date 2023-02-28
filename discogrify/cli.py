@@ -83,7 +83,7 @@ def logout() -> None:
     "--public",
     is_flag=True,
     default=False,
-    help="Playlist is created private be default. Provide this flag if you prefer it to be public",
+    help="Playlist is created private by default. Provide this flag if you prefer it to be public",
 )
 @click.option(
     "--with-singles/--without-singles",
@@ -124,7 +124,6 @@ def create(
     try:
         client = create_client()
     except ClientError as e:
-        click.echo("Something went wrong")
         click.echo(e, err=True)
         raise click.exceptions.Exit(1)
 
@@ -139,11 +138,15 @@ def create(
     if not playlist_title:
         playlist_title = f"{artist.name} (by d8y)"
 
-    albums = list(
-        itertools.chain.from_iterable(
-            client.get_artist_albums(artist=artist, singles=with_singles, compilations=with_compilations)
+    try:
+        albums = list(
+            itertools.chain.from_iterable(
+                client.get_artist_albums(artist=artist, singles=with_singles, compilations=with_compilations)
+            )
         )
-    )
+    except ClientError as e:
+        click.echo(e, err=True)
+        raise click.exceptions.Exit(1)
 
     if not albums:
         click.echo("No albums found")
@@ -156,7 +159,11 @@ def create(
 
     tracks = []
     for album in albums:
-        tracks.extend(list(itertools.chain.from_iterable(client.get_album_tracks(album))))
+        try:
+            tracks.extend(list(itertools.chain.from_iterable(client.get_album_tracks(album))))
+        except ClientError as e:
+            click.echo(e, err=True)
+            raise click.exceptions.Exit(1)
 
     if not tracks:
         click.echo("No tracks found")
@@ -168,39 +175,58 @@ def create(
 
     playlist = None
 
-    for my_playlist_page in client.get_my_playlists():
-        for my_playlist in my_playlist_page:
-            if my_playlist.name == playlist_title:
-                playlist = my_playlist
+    try:
+        my_playlists = list(itertools.chain.from_iterable(client.get_my_playlists()))
+    except ClientError as e:
+        click.echo(e, err=True)
+        raise click.exceptions.Exit(1)
 
-                playlist_tracks = list(itertools.chain.from_iterable(client.get_playlist_tracks(playlist)))
+    for my_playlist in my_playlists:
+        if my_playlist.name != playlist_title:
+            continue
 
-                click.echo(
-                    f"Playlist '{playlist_title}' already exists and contains "
-                    f"{len(playlist_tracks)} track{'' if len(tracks) == 1 else 's'}"
+        playlist = my_playlist
+
+        try:
+            playlist_tracks = list(itertools.chain.from_iterable(client.get_playlist_tracks(playlist)))
+        except ClientError as e:
+            click.echo(e, err=True)
+            raise click.exceptions.Exit(1)
+
+        click.echo(
+            f"Playlist '{playlist_title}' already exists and contains "
+            f"{len(playlist_tracks)} track{'' if len(tracks) == 1 else 's'}"
+        )
+
+        tracks = utils.deduplicate_tracks(playlist_tracks, tracks)
+        if tracks:
+            if not yes:
+                click.confirm(
+                    f"Update playlist with {len(tracks)} new track{'' if len(tracks) == 1 else 's'}?",
+                    default=True,
+                    abort=True,
                 )
-
-                tracks = utils.deduplicate_tracks(playlist_tracks, tracks)
-                if tracks:
-                    if not yes:
-                        click.confirm(
-                            f"Update playlist with {len(tracks)} new track{'' if len(tracks) == 1 else 's'}?",
-                            default=True,
-                            abort=True,
-                        )
-                else:
-                    click.echo("No new tracks to be added")
-                    raise click.exceptions.Exit(0)
+        else:
+            click.echo("No new tracks to be added")
+            raise click.exceptions.Exit(0)
 
     if playlist is None:
         click.echo(f"Creating playlist '{playlist_title}'")
         if not yes:
             click.confirm("Continue?", default=True, abort=True)
-        playlist = client.create_my_playlist(name=playlist_title, description=playlist_description, public=public)
+        try:
+            playlist = client.create_my_playlist(name=playlist_title, description=playlist_description, public=public)
+        except ClientError as e:
+            click.echo(e, err=True)
+            raise click.exceptions.Exit(1)
 
     click.echo()
 
     click.echo(f"Adding {len(tracks)} track{'' if len(tracks) == 1 else 's'} to playlist")
-    client.add_tracks_to_playlist(playlist=playlist, tracks=tracks)
+    try:
+        client.add_tracks_to_playlist(playlist=playlist, tracks=tracks)
+    except ClientError as e:
+        click.echo(e, err=True)
+        raise click.exceptions.Exit(1)
 
     click.echo(f"Playlist ready: {playlist.url}")

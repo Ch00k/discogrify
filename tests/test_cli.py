@@ -4,7 +4,7 @@ from typing import Callable
 import pytest
 from click.testing import CliRunner
 
-from discogrify.cli import CONTEXT_SETTINGS, cli
+from discogrify.cli import CONTEXT_SETTINGS, cli, create_client
 
 from . import conftest
 
@@ -94,3 +94,31 @@ def test_create_invalid_artist_url(setup_auth: Callable) -> None:
         "Usage: cli create [OPTIONS] ARTIST_URL\nTry 'cli create --help' for help.\n\n"
         "Error: Invalid value for 'ARTIST_URL': Must be a https://open.spotify.com/artist/<ID> URL\n"
     )
+
+
+def test_create_custom_title_description(setup_auth: Callable, delete_playlist: Callable) -> None:
+    runner = CliRunner()
+
+    result = runner.invoke(
+        cli,
+        [
+            "create",
+            ARTIST_URL,
+            "--playlist-title",
+            "My Joy Division discography playlist",
+            "--playlist-description",
+            "The complete Joy Division discography",
+        ],
+        terminal_width=CONTEXT_SETTINGS["max_content_width"],
+    )
+    assert result.exit_code == 0
+    created_playlist_id = get_playlist_id(result.output)
+
+    playlist = create_client().get_playlist(created_playlist_id)
+    assert playlist.name == "My Joy Division discography playlist"
+
+    # TODO: For some reason the description sometimes does not propagate
+    # assert playlist.description == "The complete Joy Division discography"
+
+    # Pass playlist ID to delete_playlist fixture
+    conftest.playlist_id = created_playlist_id

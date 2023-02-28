@@ -16,7 +16,7 @@ Options:
   -d, --playlist-description TEXT
                                   Playlist is created without a description by default. Use this option to specify a
                                   description
-  -p, --public                    Playlist is created private be default. Provide this flag if you prefer it to be
+  -p, --public                    Playlist is created private by default. Provide this flag if you prefer it to be
                                   public
   --with-singles / --without-singles
                                   Include or exclude singles from the resulting discography. Default: include

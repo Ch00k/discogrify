@@ -82,7 +82,7 @@ class Client:
             raise ClientError(e)
 
         if res is None:
-            raise ClientError("boom!")
+            raise ClientError("Internal client error")
 
         self.me = User(name=res["display_name"], id=res["id"], url=res["external_urls"]["spotify"])
 
@@ -93,7 +93,7 @@ class Client:
             raise ClientError(e)
 
         if res is None:
-            raise ClientError("boom!")
+            raise ClientError("Internal client error")
 
         for page in self._paginate_search_result(res):
             yield [
@@ -114,7 +114,7 @@ class Client:
             raise ClientError(e)
 
         if res is None:
-            raise ClientError("boom!")
+            raise ClientError("Internal client error")
 
         return Artist(
             id=res["id"],
@@ -149,7 +149,7 @@ class Client:
             raise ClientError(e)
 
         if res is None:
-            raise ClientError("boom!")
+            raise ClientError("Internal client error")
 
         for page in self._paginate_list_result(res):
             yield [
@@ -171,7 +171,7 @@ class Client:
             raise ClientError(e)
 
         if res is None:
-            raise ClientError("boom!")
+            raise ClientError("Internal client error")
 
         for page in self._paginate_list_result(res):
             yield [
@@ -190,7 +190,7 @@ class Client:
             raise ClientError(e)
 
         if res is None:
-            raise ClientError("boom!")
+            raise ClientError("Internal client error")
 
         for page in self._paginate_list_result(res):
             yield [
@@ -210,7 +210,7 @@ class Client:
             raise ClientError(e)
 
         if res is None:
-            raise ClientError("boom!")
+            raise ClientError("Internal client error")
 
         for page in self._paginate_list_result(res):
             yield [
@@ -223,6 +223,19 @@ class Client:
                 for p in page
             ]
 
+    def get_playlist(self, playlist_id: str) -> Playlist:
+        try:
+            res = self.client.playlist(playlist_id)
+        except (SpotifyException, SpotifyOauthError) as e:
+            raise ClientError(e)
+
+        if res is None:
+            raise ClientError("Internal client error")
+
+        return Playlist(
+            name=res["name"], description=res["description"], id=res["id"], url=res["external_urls"]["spotify"]
+        )
+
     def create_my_playlist(self, name: str, description: Optional[str] = None, public: bool = True) -> Playlist:
         if description is None:
             description = ""
@@ -233,13 +246,13 @@ class Client:
             raise ClientError(e)
 
         if res is None:
-            raise ClientError("boom!")
+            raise ClientError("Internal client error")
 
         return Playlist(name=name, description=description, id=res["id"], url=res["external_urls"]["spotify"])
 
-    def delete_my_playlist(self, playlist: Playlist) -> None:
+    def delete_my_playlist(self, playlist_id: str) -> None:
         try:
-            self.client.current_user_unfollow_playlist(playlist.id)
+            self.client.current_user_unfollow_playlist(playlist_id)
         except (SpotifyException, SpotifyOauthError) as e:
             raise ClientError(e)
 
@@ -258,7 +271,7 @@ class Client:
             raise ClientError(e)
 
         if res is None:
-            raise ClientError("boom!")
+            raise ClientError("Internal client error")
 
         for page in self._paginate_list_result(res):
             yield [
@@ -286,7 +299,7 @@ class Client:
                 raise ClientError(e)
 
             if next_page is None:
-                raise ClientError("boom!")
+                raise ClientError("Internal client error")
 
             yield next_page[key]["items"]
 
@@ -302,7 +315,7 @@ class Client:
                 raise ClientError(e)
 
             if next_page is None:
-                raise ClientError("boom!")
+                raise ClientError("Internal client error")
 
             yield next_page["items"]
 
@@ -381,5 +394,5 @@ def main() -> None:  # pragma: no cover
         print("No tracks to be added")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

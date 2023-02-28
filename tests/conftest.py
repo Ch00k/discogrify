@@ -2,7 +2,7 @@ from typing import Generator, Optional
 
 import pytest
 
-from discogrify import cli, config, spotify_client
+from discogrify import cli, config
 
 from . import config as test_config
 
@@ -24,6 +24,4 @@ def delete_playlist() -> Generator:
     client = cli.create_client()
 
     if playlist_id is not None:
-        client.delete_my_playlist(
-            spotify_client.Playlist(id=playlist_id, url="dummy", name="dummy", description="dummy")
-        )
+        client.delete_my_playlist(playlist_id)

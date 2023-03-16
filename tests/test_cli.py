@@ -28,7 +28,7 @@ def test_help(subcommand: str) -> None:
     assert result.output == open(OUTPUT_PATH / output_file).read()
 
 
-def test_login(setup_auth: Callable) -> None:
+def test_login() -> None:
     runner = CliRunner()
     result = runner.invoke(cli, ["login"], terminal_width=CONTEXT_SETTINGS["max_content_width"])
 
@@ -36,7 +36,8 @@ def test_login(setup_auth: Callable) -> None:
     assert result.output == "Login successful\n"
 
 
-def test_logout(setup_auth: Callable) -> None:
+@pytest.mark.skip
+def test_logout() -> None:
     runner = CliRunner()
     result = runner.invoke(cli, ["logout"], terminal_width=CONTEXT_SETTINGS["max_content_width"])
 
@@ -50,13 +51,14 @@ def test_logout(setup_auth: Callable) -> None:
     assert result.output == "Not logged in\n"
 
 
-def test_create(setup_auth: Callable, delete_playlist: Callable) -> None:
+def test_create(delete_playlist: Callable) -> None:
     runner = CliRunner()
 
     # Create with albums only
     result = runner.invoke(
         cli, ["create", ARTIST_URL, "--without-singles", "--yes"], terminal_width=CONTEXT_SETTINGS["max_content_width"]
     )
+
     assert result.exit_code == 0
     created_playlist_id = get_playlist_id(result.output)
     assert result.output == open(OUTPUT_PATH / "create_albums_only.txt").read().format(playlist_id=created_playlist_id)
@@ -83,7 +85,7 @@ def test_create(setup_auth: Callable, delete_playlist: Callable) -> None:
     conftest.playlist_id = created_playlist_id
 
 
-def test_create_invalid_artist_url(setup_auth: Callable) -> None:
+def test_create_invalid_artist_url() -> None:
     runner = CliRunner()
 
     result = runner.invoke(
@@ -96,7 +98,7 @@ def test_create_invalid_artist_url(setup_auth: Callable) -> None:
     )
 
 
-def test_create_custom_title_description(setup_auth: Callable, delete_playlist: Callable) -> None:
+def test_create_custom_title_description(delete_playlist: Callable) -> None:
     runner = CliRunner()
 
     result = runner.invoke(

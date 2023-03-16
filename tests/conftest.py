@@ -4,8 +4,6 @@ import pytest
 
 from discogrify import cli, config
 
-from . import config as test_config
-
 playlist_id: Optional[str] = None
 
 
@@ -14,11 +12,6 @@ def env() -> None:
     print()
     print(f"D8Y_AUTH_CONFIG_FILE: {config.D8Y_AUTH_CONFIG_FILE}")
     print(f"D8Y_AUTH_CACHE_FILE: {config.D8Y_AUTH_CACHE_FILE}")
-
-
-@pytest.fixture()
-def setup_auth() -> None:
-    config.D8Y_AUTH_CACHE_FILE.write_text(test_config.D8Y_AUTH_CACHE_DATA)
 
 
 @pytest.fixture()

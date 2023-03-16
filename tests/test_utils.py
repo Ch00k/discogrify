@@ -1,7 +1,7 @@
 import base64
 import socket
 from pathlib import Path
-from unittest import TestCase, mock
+from unittest import mock
 
 import pytest
 

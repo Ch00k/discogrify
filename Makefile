@@ -17,8 +17,13 @@ pip_sync: install_pip_tools
 install_develop: pip_compile pip_sync
 	python setup.py develop
 
-test:
-	pytest -s tests
+lint:
+	pre-commit run --all-files
 
 auth:
 	python tests/tools/authenticate.py
+
+test:
+	pytest -s tests
+
+ci: install_develop lint auth test

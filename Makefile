@@ -27,3 +27,9 @@ test: install_develop
 	pytest -s tests
 
 ci: auth test
+
+publish:
+	pip install -U wheel twine
+	python setup.py sdist
+	python setup.py bdist_wheel
+	twine upload --verbose dist/*

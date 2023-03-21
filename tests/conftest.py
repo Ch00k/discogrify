@@ -1,3 +1,4 @@
+import json
 from typing import Generator, Optional
 
 import pytest
@@ -12,6 +13,10 @@ def env() -> None:
     print()
     print(f"D8Y_AUTH_CONFIG_FILE: {config.D8Y_AUTH_CONFIG_FILE}")
     print(f"D8Y_AUTH_CACHE_FILE: {config.D8Y_AUTH_CACHE_FILE}")
+
+    with open(config.D8Y_AUTH_CACHE_FILE) as f:
+        auth_cache_data = f.read()
+    print(f"Token expiration timestamp: {json.loads(auth_cache_data).get('expires_at')}")
 
 
 @pytest.fixture()

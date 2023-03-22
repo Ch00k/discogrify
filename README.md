@@ -18,7 +18,7 @@ pipx install discogrify
 First, authenticate with Spotify:
 
 ```
-d8y authenticate
+d8y login
 ```
 
 This will open a browser where you would be asked to login with your Spotify account and give _discogrify_ access to it.

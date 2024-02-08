@@ -18,7 +18,7 @@ if __name__ == "__main__":
         config.D8Y_AUTH_CACHE_FILE.touch()
         config.D8Y_AUTH_CACHE_FILE.write_text(auth_cache_data)
 
-    cli.create_client()
+    cli.create_client(open_browser=False)
 
     with open(config.D8Y_AUTH_CACHE_FILE) as f:
         auth_cache_data = f.read()

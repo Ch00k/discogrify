@@ -8,6 +8,11 @@ on:
     tags:
       - '**'
 
+env:
+  D8Y_AUTH_CONFIG_FILE: ${{ github.workspace }}/tests/data/auth_config
+  D8Y_AUTH_CACHE_FILE: ${{ github.workspace }}/tests/data/auth
+  D8Y_AUTH_CACHE_DATA: ${{ secrets.D8Y_AUTH_CACHE_DATA }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -40,14 +45,7 @@ jobs:
           pip install poetry
           poetry install
 
-      - run: |
-          poetry run python tests/tools/authenticate.py
-          poetry run pytest -s
-        env:
-          D8Y_AUTH_CACHE_DATA: ${{ secrets.D8Y_AUTH_CACHE_DATA }}
-
-      - uses: codecov/codecov-action@v4
-        if: matrix.python-version == '3.12'
+      - run: poetry run python tests/tools/authenticate.py
 
       # Update the secret with the data from D8Y_AUTH_CACHE_FILE in order to keep it in sync across test runs for
       # different Python versions.
@@ -59,6 +57,12 @@ jobs:
           name: D8Y_AUTH_CACHE_DATA
           value: ${{ steps.capture_auth_cache_data.outputs.AUTH_CACHE_DATA }}
           pa_token: ${{ secrets.GH_TOKEN }}
+
+      - run: poetry run pytest -s
+
+      - uses: codecov/codecov-action@v4
+        if: matrix.python-version == '3.12'
+
 
   publish:
     if: github.ref_type == 'tag'

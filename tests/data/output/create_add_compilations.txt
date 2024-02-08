@@ -1,4 +1,4 @@
-Joy Division: Alternative Rock, Art Rock, Madchester, New Wave, Post-punk, Rock, Uk Post-punk
+Joy Division: Alternative Rock, Art Rock, Indie Rock, Madchester, New Wave, Post-punk, Punk, Rock, Uk Post-punk
 
 Type         Year      Tracks  Title
 -----------  ------  --------  ------------------------------------------------------
@@ -11,8 +11,8 @@ Single       1980           3  Love Will Tear Us Apart
 Single       1980           2  Atmosphere
 Single       1980           3  Love Will Tear Us Apart
 Single       2009           3  Love Will Tear Us Apart (1980 Martin Hannett Versions)
-Compilation  1981          20  Still (2007 Remaster)
 Compilation  1981          34  Still (Collector's Edition)
+Compilation  1981          20  Still (2007 Remaster)
 Compilation  2008          14  The Best Of
 Compilation  2010          19  Substance
 Compilation  2011          18  TOTAL
